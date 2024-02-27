@@ -35,7 +35,7 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-(elpaca nil (message "deferred"))
+;;(elpaca nil (message "deferred"))
 
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
@@ -51,7 +51,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(evil-collection evil)))
+ '(package-selected-packages '(vertico evil-collection evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
