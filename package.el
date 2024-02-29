@@ -20,19 +20,33 @@
 (use-package evil-tutor :ensure t)
 
 ;; Code Completion
-(use-package company
+(use-package company :ensure t
+  :after prog-mode
   :defer 2
   :custom
   (company-begin-commands '(self-insert-command))
   (company-idle-delay .1)
   (company-minimum-prefix-length 2)
-  (company-show-numbers t)
   (company-tooltip-align-annotations 't)
   (global-company-mode t))
 
-(use-package company-box
+;; (use-package company :ensure t
+;;   :defer 2
+;;   :diminish
+;;   :custom
+;;   (company-begin-commands '(self-insert-command))
+;;   (company-idle-delay .1)
+;;   (company-minimum-prefix-length 2)
+;;   (company-show-numbers t)
+;;   (company-tooltip-align-annotations 't)
+;;   (global-company-mode t))
+
+;; (use-package company :ensure t
+;;   :custom
+;;   (global-company-mode))
+
+(use-package company-box :ensure t
   :after company
-  :diminish
   :hook (company-mode . company-box-mode))
 
 ;; Parentheses completion
@@ -45,7 +59,14 @@
 ;; LSP
 (use-package lsp-mode
   :ensure t
-  :hook (c++-mode))
+  :hook
+  ((prog-mode . lsp-deferred)
+   (c++-mode . lsp)
+   (elisp-mode . lsp)
+   (lsp-mode . lsp-enable-which-key-integrationa))
+  :commands lsp)
+
+(use-package lsp-ui :commands lsp-ui-mode)
 
 ;; Which-key
 (use-package which-key :ensure t
@@ -90,3 +111,21 @@
 
 ;; Sudo-edit
 (use-package sudo-edit :ensure t)
+
+;; Extras
+(use-package all-the-icons :ensure t
+  :if (display-graphic-p))
+
+;; Snippets
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+;; Flycheck
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
