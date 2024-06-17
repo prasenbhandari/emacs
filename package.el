@@ -1,3 +1,6 @@
+;;; All the packages and their cofiguration
+
+;;; code
 (require 'package)
 (setq package-archives '(("org" . "https://orgmode.org/elpa/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
@@ -6,12 +9,12 @@
 (package-initialize)
 
 
-;; Ensure use-package is installed
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; ;; Ensure use-package is installed
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
 
-(require 'use-package)
+;; (require 'use-package)
 (setq use-package-always-ensure t)
 
 ;;evil mode(vim emulation)
@@ -52,40 +55,55 @@
   :config
   (add-to-list 'company-backends 'company-irony))
 
-;; Parentheses completion
-;; (use-package smartparens-mode
-;;   :ensure smartparens
-;;   :hook (prog-mode text-mode markdown-mode)
-;;   :config
-;;   (require 'smarparens-config))
-(electric-pair-mode)
-
 
 ;; LSP
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :hook ((c++-mode . lsp-deferred)
+;;          (c-mode . lsp-deferred)
+;;          (java-mode . lsp-deferred)
+;;          (python-mode . lsp-deferred)
+;; 	 (emacs-lisp-mode . lsp-deferred))
+;;   :commands (lsp lsp-deferred)
+;;   :config
+;;   (setq lsp-clients-clangd-executable "clangd")
+;;   (lsp-register-client
+;;    (make-lsp-client :new-connection (lsp-stdio-connection "clangd")
+;;                     :major-modes '(c-mode c++-mode)
+;;                     :server-id 'clangd))
+;;   (setq lsp-language-id-configuration
+;;         '((emacs-lisp-mode . "emacs-lisp")
+;; 	  (python-mode . "python")
+;; 	  (c-mode . "c")
+;; 	  (c++-mode . "cpp")
+;; 	  (java-mode . "java")))
+
+;;   :custom
+;;   (lsp-prefer-capf t)
+;;   (lsp-keep-workspace-alive nil))
+
 (use-package lsp-mode
   :ensure t
   :hook ((c++-mode . lsp-deferred)
          (c-mode . lsp-deferred)
          (java-mode . lsp-deferred)
-         (python-mode . lsp-deferred)
-	 (emacs-lisp-mode . lsp-deferred))
+         (python-mode . lsp-deferred))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-clients-clangd-executable "clangd")
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection "clangd")
-                    :major-modes '(c-mode c++-mode)
-                    :server-id 'clangd))
-  (setq lsp-language-id-configuration
-        '((emacs-lisp-mode . "emacs-lisp")
-	  (python-mode . "python")
-	  (c-mode . "c")
-	  (c++-mode . "cpp")
-	  (java-mode . "java")))
-
+  (setq lsp-clients-clangd-executable "clangd"
+        lsp-language-id-configuration
+        '((python-mode . "python")
+          (c-mode . "c")
+          (c++-mode . "cpp")
+          (java-mode . "java")))
   :custom
   (lsp-prefer-capf t)
   (lsp-keep-workspace-alive nil))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
 
 (use-package lsp-java
   :hook (java-mode . lsp-deferred)
@@ -101,18 +119,18 @@
 (setq lsp-idle-delay 0.500)
 
 ;;LSP UI
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :config
-  (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable t
-        lsp-ui-doc-header t
-        lsp-ui-doc-include-signature t
-        lsp-ui-doc-position 'at-point
-        lsp-ui-doc-max-width 100
-        lsp-ui-doc-max-height 30))
+;; (use-package lsp-ui
+;;   :commands lsp-ui-mode
+;;   :config
+;;   (setq lsp-ui-sideline-enable nil
+;;         lsp-ui-doc-enable t
+;;         lsp-ui-doc-header t
+;;         lsp-ui-doc-include-signature t
+;;         lsp-ui-doc-position 'at-point
+;;         lsp-ui-doc-max-width 100
+;;         lsp-ui-doc-max-height 30))
 
-;; Which-key
+;; ;; Which-key
 (use-package which-key :ensure t
   :init
   (which-key-mode 1)
@@ -134,12 +152,13 @@
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
+  ;;(doom-themes-neotree-config)
   ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-colours") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
+  ;;(setq doom-themes-treemacs-theme "doom-colours") ; use "doom-colors" for less minimal icon theme
+  ;;(doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+  ;;(doom-themes-org-config)
+  )
 
 
 ;;(use-package smart-tabs-mode :ensure t
@@ -157,6 +176,18 @@
   :init
   (vertico-mode 1))
 
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  ;; More convenient directory navigation commands
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  ;; Tidy shadowed file names
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
+
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;;Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
@@ -173,6 +204,7 @@
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
   (marginalia-mode))
+
 
 (use-package consult
   :ensure t
@@ -214,3 +246,12 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+
+(use-package flycheck-inline
+  :ensure t
+  :after flycheck
+  :hook (flycheck-mode . flycheck-inline-mode))
+
+
+(provide 'package)
+;;; package.el ends here
