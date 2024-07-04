@@ -11,7 +11,7 @@
 
   (leader-keys
     "b" '(:ignore t :wk "Buffer")
-    "b b" '(switch-to-buffer :wk "Switch buffer")
+    ;;"b b" '(switch-to-buffer :wk "Switch buffer")
     "b k" '(kill-this-buffer :wk "Kill this buffer")
     "b n" '(next-buffer :wk "Next buffer")
     "b p" '(previous-buffer :wk "Previuos buffer")
@@ -25,6 +25,7 @@
 
   (leader-keys
     "." '(find-file :wk "Find file")
+    "," '(consult-buffer :wk "Switch buffer")
     "f c" '((lambda () (interactive) (find-file "~/.config/emacs")) :wk "Open emacs config")
     "TAB TAB" '(comment-line :wk "Comment lines"))
 
@@ -51,18 +52,18 @@
 
 ;; Defer keybinding setup until Evil mode is loaded
 (with-eval-after-load 'evil
-;;   ;; Remap hjkl to jkl;
-   (define-key evil-normal-state-map "h" nil)
-   (define-key evil-normal-state-map "j" 'evil-backward-char)
-   (define-key evil-normal-state-map "k" 'evil-next-line)
-   (define-key evil-normal-state-map "l" 'evil-previous-line)
-   (define-key evil-normal-state-map ";" 'evil-forward-char)
+;; ;;   ;; Remap hjkl to jkl;
+;;    (define-key evil-normal-state-map "h" nil)
+;;    (define-key evil-normal-state-map "j" 'evil-backward-char)
+;;    (define-key evil-normal-state-map "k" 'evil-next-line)
+;;    (define-key evil-normal-state-map "l" 'evil-previous-line)
+;;    (define-key evil-normal-state-map ";" 'evil-forward-char)
 
-   (define-key evil-visual-state-map "h" nil)
-   (define-key evil-visual-state-map "j" 'evil-backward-char)
-   (define-key evil-visual-state-map "k" 'evil-next-line)
-   (define-key evil-visual-state-map "l" 'evil-previous-line)
-   (define-key evil-visual-state-map ";" 'evil-forward-char)
+;;    (define-key evil-visual-state-map "h" nil)
+;;    (define-key evil-visual-state-map "j" 'evil-backward-char)
+;;    (define-key evil-visual-state-map "k" 'evil-next-line)
+;;    (define-key evil-visual-state-map "l" 'evil-previous-line)
+;;    (define-key evil-visual-state-map ";" 'evil-forward-char)
 )
 
 ;; Reload function
@@ -70,14 +71,24 @@
   (interactive)
   (load-file "~/.config/emacs/init.el")
   (load-file "~/.config/emacs/init.el")
-)
+  )
 
-;; Window movement
-(global-set-key (kbd "C-c ;") 'windmove-right)
-(global-set-key (kbd "C-c j") 'windmove-left)
-(global-set-key (kbd "C-c l") 'windmove-up)
-(global-set-key (kbd "C-c k") 'windmove-down)
 
-(global-set-key (kbd "M-o") 'ace-window)
+;; Define key bindings for Vertico using general
+(general-define-key
+ :keymaps 'vertico-map
+ "C-j" 'vertico-next
+ "C-k" 'vertico-previous)
+
+
+(general-define-key
+ ;; Window movement
+ "C-c ;" 'windmove-right
+ "C-c j" 'windmove-left
+ "C-c l" 'windmove-up
+ "C-c k" 'windmove-down
+
+ ;; ace-window
+ "M-o" 'ace-window)
 
 

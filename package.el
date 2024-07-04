@@ -9,12 +9,12 @@
 (package-initialize)
 
 
-;; ;; Ensure use-package is installed
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
+;; Ensure use-package is installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-;; (require 'use-package)
+(require 'use-package)
 (setq use-package-always-ensure t)
 
 ;;evil mode(vim emulation)
@@ -29,9 +29,12 @@
     :after evil
     :config
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
-    (evil-collection-init))
-(use-package evil-tutor :ensure t)
+    (evil-collection-init)
+    (define-key evil-insert-state-map (kbd "TAB") 'indent-for-tab-command)
+    (define-key evil-normal-state-map (kbd "TAB") 'indent-for-tab-command)
+    )
 
+(use-package evil-tutor :ensure t)
 
 ;; Code Completion
 (use-package company
@@ -40,10 +43,15 @@
   :custom
   (company-backends '(company-capf))
   :config
-(global-company-mode)
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1)
+  (setq company-selection-wrap-around t)
+  (setq company-tooltip-align-annotations t)
+  (global-company-mode)
   :bind (:map company-active-map
               ("TAB" . company-select-next)
-              ("<tab>" . company-select-next)))
+              ("<tab>" . company-select-next)
+	      ("<backtab>" . company-select-previous)))
 
 (use-package company-box
   :ensure t
@@ -57,30 +65,6 @@
 
 
 ;; LSP
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :hook ((c++-mode . lsp-deferred)
-;;          (c-mode . lsp-deferred)
-;;          (java-mode . lsp-deferred)
-;;          (python-mode . lsp-deferred)
-;; 	 (emacs-lisp-mode . lsp-deferred))
-;;   :commands (lsp lsp-deferred)
-;;   :config
-;;   (setq lsp-clients-clangd-executable "clangd")
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-stdio-connection "clangd")
-;;                     :major-modes '(c-mode c++-mode)
-;;                     :server-id 'clangd))
-;;   (setq lsp-language-id-configuration
-;;         '((emacs-lisp-mode . "emacs-lisp")
-;; 	  (python-mode . "python")
-;; 	  (c-mode . "c")
-;; 	  (c++-mode . "cpp")
-;; 	  (java-mode . "java")))
-
-;;   :custom
-;;   (lsp-prefer-capf t)
-;;   (lsp-keep-workspace-alive nil))
 
 (use-package lsp-mode
   :ensure t
@@ -90,51 +74,70 @@
          (python-mode . lsp-deferred))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-clients-clangd-executable "clangd"
-        lsp-language-id-configuration
+  (setq lsp-language-id-configuration
         '((python-mode . "python")
           (c-mode . "c")
           (c++-mode . "cpp")
           (java-mode . "java")))
+
   :custom
   (lsp-prefer-capf t)
   (lsp-keep-workspace-alive nil))
 
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :commands lsp-ui-mode)
 
 
 (use-package lsp-java
   :hook (java-mode . lsp-deferred)
   :config (add-hook 'java-mode-hook 'lsp))
 
+(use-package lsp-clangd
+  :ensure nil ;; lsp-clangd is part of lsp-mode
+  :after lsp-mode
+  :config
+  (setq lsp-clients-clangd-args '("--header-insertion=never")))
+
+
 (use-package lsp-pyright
+  :ensure t
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp-deferred))))
+
+(use-package python-black
+  :ensure t
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim)
+  :config
+  (setq python-black-on-save-mode t))
+
+(use-package py-autopep8
+  :hook ((python-mode) . py-autopep8-mode))
+
+(add-hook 'emacs-lisp-mode-hook 'company-mode)
 
 ;; LSP Performance Tweaks
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 (setq lsp-idle-delay 0.500)
 
-;;LSP UI
-;; (use-package lsp-ui
-;;   :commands lsp-ui-mode
-;;   :config
-;;   (setq lsp-ui-sideline-enable nil
-;;         lsp-ui-doc-enable t
-;;         lsp-ui-doc-header t
-;;         lsp-ui-doc-include-signature t
-;;         lsp-ui-doc-position 'at-point
-;;         lsp-ui-doc-max-width 100
-;;         lsp-ui-doc-max-height 30))
+
+
+;; LSP UI
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-position 'bottom
+	lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-max-width 100
+        lsp-ui-doc-max-height 30))
 
 ;; ;; Which-key
 (use-package which-key :ensure t
-  :init
-  (which-key-mode 1)
   :config
+  (which-key-mode 1)
   (setq  which-key-add-column-padding 1
 	 which-key-min-display-lines 6
 	 which-key-idle-delay 0.8
@@ -161,10 +164,11 @@
   )
 
 
-;;(use-package smart-tabs-mode :ensure t
-;;  :init
-;;  (global-smart-tab-mode 1)
-;;  (setq indent-tabs-mode 1))
+;; (use-package smart-tabs-mode
+;;   :ensure t
+;;   :init
+;;   (global-smart-tab-mode 1)
+;;   (setq indent-tabs-mode 1))
 
 
 ;; Vertico
@@ -187,6 +191,10 @@
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
+(use-package savehist
+  :init
+  (savehist-mode))
+
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -205,19 +213,18 @@
   ;; package.
   (marginalia-mode))
 
-
 (use-package consult
   :ensure t
-  :bind ("C-x b" . consult-buffer))
-
+  :bind
+  ;;("TAB" . )
+  )
 
 ;; substring search for vertico
 (use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
+  :init
+  (setq completion-styles '(orderless basic)
+	completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
 
 ;; Ace-window
 (use-package ace-window :ensure t)
@@ -251,6 +258,20 @@
   :ensure t
   :after flycheck
   :hook (flycheck-mode . flycheck-inline-mode))
+
+;; Modeline
+(use-package spaceline
+  :ensure t
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
+
+(use-package powerline
+  :ensure t)
+
+;; All the icons
+(use-package all-the-icons
+  :ensure t)
 
 
 (provide 'package)

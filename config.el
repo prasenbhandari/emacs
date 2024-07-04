@@ -1,3 +1,5 @@
+;;; Package --- all the configuration goes here
+
 ;; Remove bars
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -16,17 +18,18 @@
 ;; Font
 (set-face-attribute 'default nil
 		    :font "JetBrains Mono"
-		    :height 108
+		    :height 120
 		    :weight 'medium)
 
-; Start screen
-(setq inhibit-startup-screen t)
+;; Start screen
+;;(setq inhibit-startup-screen t)
 
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes")
 ;;(load-theme 'doom-acario-dark)
 
 (electric-pair-mode 1)
 (electric-indent-mode 1)
+;;(setq backward-delete-char-untabify-method 'hungry)
 
 ;; ;; Define function to display splash image
 ;; (defun my/display-splash-image ()
@@ -46,3 +49,14 @@
 ;; ;; Optional: Adjust image display settings
 ;; (setq image-animate-loop t)  ; Enable animation for GIFs
 ;; (setq image-animate-max-size 200)  ; Limit the maximum size for animated images
+
+
+;; indent styles
+(setq c-default-style
+      '((c++-mode . "java") (c-mode . "java") (java-mode . "java") (other . "gnu")))
+
+
+(provide 'config)
+
+
+;;; config.el ends here
