@@ -14,8 +14,10 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+
 (require 'use-package)
 (setq use-package-always-ensure t)
+
 
 ;;evil mode(vim emulation)
 (use-package evil :ensure t :demand t
@@ -34,7 +36,9 @@
     (define-key evil-normal-state-map (kbd "TAB") 'indent-for-tab-command)
     )
 
+
 (use-package evil-tutor :ensure t)
+
 
 ;; Code Completion
 (use-package company
@@ -53,9 +57,11 @@
               ("<tab>" . company-select-next)
 	      ("<backtab>" . company-select-previous)))
 
+
 (use-package company-box
   :ensure t
   :hook (company-mode . company-box-mode))
+
 
 (use-package company-irony
   :ensure t
@@ -93,6 +99,7 @@
   :hook (java-mode . lsp-deferred)
   :config (add-hook 'java-mode-hook 'lsp))
 
+
 (use-package lsp-clangd
   :ensure nil ;; lsp-clangd is part of lsp-mode
   :after lsp-mode
@@ -106,22 +113,23 @@
                          (require 'lsp-pyright)
                          (lsp-deferred))))
 
+
 (use-package python-black
-  :ensure t
-  :after python
-  :hook (python-mode . python-black-on-save-mode-enable-dwim)
-  :config
-  (setq python-black-on-save-mode t))
+ :ensure t
+ :after python
+ :hook (python-mode . python-black-on-save-mode-enable-dwim)
+ :config
+ (setq python-black-on-save-mode t))
+
 
 (use-package py-autopep8
-  :hook ((python-mode) . py-autopep8-mode))
+ :hook ((python-mode) . py-autopep8-mode))
 
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
 
 ;; LSP Performance Tweaks
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 (setq lsp-idle-delay 0.500)
-
 
 
 ;; LSP UI
@@ -133,6 +141,17 @@
 	lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-max-width 100
         lsp-ui-doc-max-height 30))
+
+
+;; Debugging
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1)
+  (dap-ui-controls-mode 1))
 
 ;; ;; Which-key
 (use-package which-key :ensure t
