@@ -33,16 +33,23 @@
     "h" '(:ignore t :wk "Help")
     "h f" '(describe-function :wk "Describe function")
     "h v" '(describe-variable :wk "Describe variable")
+    "h i" '(info :wk "Info browser")
     "h r r" '(reload :wk "Reload emacs config"))
 
   (leader-keys
     "w" '(:ignore t :wk "Window")
     "w o" '(ace-window :wk "Ace window")
-    "w j" '(windmove-left :wk "Move to right window")
-    "w k" '(windmove-down :wk "Move to down window")
-    "w l" '(windmove-up :wk "Move to up window")
-    "w ;" '(widmoce-right :wk "Move to right window"))
+    "w h" '(windmove-left :wk "Move to left window")
+    "w j" '(windmove-down :wk "Move to down window")
+    "w k" '(windmove-up :wk "Move to up window")
+    "w l" '(widmoce-right :wk "Move to right window"))
 
+  (leader-keys
+    "o" '(:ignore t :wk "org")
+    "o r" '(:ignore t :wk "org-roam")
+    "o r i" '(org-roam-node-insert :wk "Insert a node")
+    "o r f" '(org-roam-node-find :wk "Find a node"))
+  
   (leader-keys
     "f u" '(sudo-edit-find-file :wk "Sudo find file")
     "f U" '(sudo-edit :wk "Sudo edit file"))
@@ -83,10 +90,10 @@
 
 (general-define-key
  ;; Window movement
- "C-c ;" 'windmove-right
- "C-c j" 'windmove-left
- "C-c l" 'windmove-up
- "C-c k" 'windmove-down
+ "C-c l" 'windmove-right
+ "C-c h" 'windmove-left
+ "C-c k" 'windmove-up
+ "C-c j" 'windmove-down
 
  ;; ace-window
  "M-o" 'ace-window)

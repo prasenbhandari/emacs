@@ -2,10 +2,9 @@
 
 ;;; code
 (require 'package)
-(setq package-archives '(("org" . "https://orgmode.org/elpa/")
-                         ("gnu" . "https://elpa.gnu.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")))
-
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("org" . "https://orgmode.org/elpa/")
+                         ("gnu" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
 
@@ -32,8 +31,6 @@
     :config
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
     (evil-collection-init)
-    (define-key evil-insert-state-map (kbd "TAB") 'indent-for-tab-command)
-    (define-key evil-normal-state-map (kbd "TAB") 'indent-for-tab-command)
     )
 
 
@@ -52,16 +49,22 @@
   (setq company-selection-wrap-around t)
   (setq company-tooltip-align-annotations t)
   (global-company-mode)
+  (setq company-backends '(company-capf
+			   company-keywords
+			   company-files
+			   company-dabbrev
+			   company-yasnippet))
+  (add-to-list 'company-backends 'company-files)
+  (add-to-list 'company-backends 'company-yasnippet)
+  (add-hook 'org-mode-hook 'company-mode)
+
   :bind (:map company-active-map
-              ("TAB" . company-select-next)
               ("<tab>" . company-select-next)
 	      ("<backtab>" . company-select-previous)))
-
 
 (use-package company-box
   :ensure t
   :hook (company-mode . company-box-mode))
-
 
 (use-package company-irony
   :ensure t
@@ -69,9 +72,14 @@
   :config
   (add-to-list 'company-backends 'company-irony))
 
+(use-package company-org-block
+  :ensure t
+  :after company
+  :config
+  (add-to-list 'company-backends 'company-org-block))
+
 
 ;; LSP
-
 (use-package lsp-mode
   :ensure t
   :hook ((c++-mode . lsp-deferred)
@@ -85,26 +93,14 @@
           (c-mode . "c")
           (c++-mode . "cpp")
           (java-mode . "java")))
-
   :custom
   (lsp-prefer-capf t)
   (lsp-keep-workspace-alive nil))
-
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode)
 
 
 (use-package lsp-java
   :hook (java-mode . lsp-deferred)
   :config (add-hook 'java-mode-hook 'lsp))
-
-
-(use-package lsp-clangd
-  :ensure nil ;; lsp-clangd is part of lsp-mode
-  :after lsp-mode
-  :config
-  (setq lsp-clients-clangd-args '("--header-insertion=never")))
 
 
 (use-package lsp-pyright
@@ -122,10 +118,8 @@
  (setq python-black-on-save-mode t))
 
 
-(use-package py-autopep8
- :hook ((python-mode) . py-autopep8-mode))
-
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
+
 
 ;; LSP Performance Tweaks
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
@@ -143,17 +137,7 @@
         lsp-ui-doc-max-height 30))
 
 
-;; Debugging
-(use-package dap-mode
-  :ensure t
-  :after lsp-mode
-  :config
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (tooltip-mode 1)
-  (dap-ui-controls-mode 1))
-
-;; ;; Which-key
+;; Which-key
 (use-package which-key :ensure t
   :config
   (which-key-mode 1)
@@ -183,13 +167,6 @@
   )
 
 
-;; (use-package smart-tabs-mode
-;;   :ensure t
-;;   :init
-;;   (global-smart-tab-mode 1)
-;;   (setq indent-tabs-mode 1))
-
-
 ;; Vertico
 (use-package vertico
   :ensure t
@@ -198,6 +175,7 @@
   (setq vertico-resize nil)
   :init
   (vertico-mode 1))
+
 
 (use-package vertico-directory
   :after vertico
@@ -209,6 +187,7 @@
               ("M-DEL" . vertico-directory-delete-word))
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
 
 (use-package savehist
   :init
@@ -232,11 +211,8 @@
   ;; package.
   (marginalia-mode))
 
-(use-package consult
-  :ensure t
-  :bind
-  ;;("TAB" . )
-  )
+(use-package consult :ensure t)
+
 
 ;; substring search for vertico
 (use-package orderless
@@ -245,17 +221,13 @@
 	completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
+
 ;; Ace-window
 (use-package ace-window :ensure t)
 
 
 ;; Sudo-edit
 (use-package sudo-edit :ensure t)
-
-
-;; Extras
-(use-package all-the-icons :ensure t
-  :if (display-graphic-p))
 
 
 ;; Snippets
@@ -278,20 +250,125 @@
   :after flycheck
   :hook (flycheck-mode . flycheck-inline-mode))
 
-;; Modeline
-(use-package spaceline
-  :ensure t
-  :config
-  (require 'spaceline-config)
-  (spaceline-spacemacs-theme))
 
-(use-package powerline
-  :ensure t)
+;; Modeline
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-major-mode-color-icon t
+	doom-modeline-buffer-state-icon t
+	doom-modeline-time t
+	doom-modeline-time-live-icon t
+	doom-modeline-battery t
+	))
+
+(display-battery-mode 1)
+(display-time-mode 1)
+
 
 ;; All the icons
-(use-package all-the-icons
+(use-package all-the-icons :ensure t)
+
+
+;; Org mode setup
+;; https://zzamboni.org/post/beautifying-org-mode-in-emacs/
+(setq org-hide-emphasis-markers t)
+
+(font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(setq before-make-frame-hook
+      (lambda () (let* ((variable-tuple
+          (cond ((x-list-fonts "JetBrains Mono")         '(:font "JetBrains Mono"))
+                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+         (base-font-color     (face-foreground 'default nil 'default))
+         (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+    (custom-theme-set-faces
+     'user
+     `(org-level-8 ((t (,@headline ,@variable-tuple))))
+     `(org-level-7 ((t (,@headline ,@variable-tuple))))
+     `(org-level-6 ((t (,@headline ,@variable-tuple))))
+     `(org-level-5 ((t (,@headline ,@variable-tuple))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25 ,:foreground "#ccc564"))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5  ,:foreground "#38848a"))))
+     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75 ,:foreground "#388a4e"))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 1.0 :underline nil))))))
+
+))
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+
+(use-package ts
   :ensure t)
 
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/org-roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+(use-package websocket
+    :after org-roam)
+
+(use-package org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
+
+;; Dashboard
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner "~/.config/emacs/rayquaza.png"))
+
+
+;; Startup analyzer
+(use-package esup
+  :ensure t
+  :commands esup)
+
+
+;; Magit
+(use-package magit
+  :ensure t)
 
 (provide 'package)
 ;;; package.el ends here

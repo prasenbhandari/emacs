@@ -1,4 +1,3 @@
-;;; Package --- all the configuration goes here
 
 ;; Remove bars
 (menu-bar-mode -1)
@@ -24,39 +23,38 @@
 ;; Start screen
 ;;(setq inhibit-startup-screen t)
 
-(add-to-list 'custom-theme-load-path "~/.config/emacs/themes")
-;;(load-theme 'doom-acario-dark)
 
 (electric-pair-mode 1)
 (electric-indent-mode 1)
-;;(setq backward-delete-char-untabify-method 'hungry)
 
-;; ;; Define function to display splash image
-;; (defun my/display-splash-image ()
-;;   "Display a splash image."
-;;   (interactive)
-;;   (let ((buffer-name "*Splash Image*"))
-;;     (with-current-buffer (get-buffer-create buffer-name)
-;;       (erase-buffer)
-;;       (let ((image-file "/home/prasen/Pictures/ray1.jpg")) ; Replace with your image file path
-;;         (insert-image (create-image image-file))
-;;         (display-buffer (current-buffer))
-;;         (goto-char (point-min))))))
 
-;; ;; Show splash image on Emacs startup
-;; (add-hook 'emacs-startup-hook #'my/display-splash-image)
-
-;; ;; Optional: Adjust image display settings
-;; (setq image-animate-loop t)  ; Enable animation for GIFs
-;; (setq image-animate-max-size 200)  ; Limit the maximum size for animated images
-
+;; ORG config
+;; (setq org-startup-indented t)
+;; (setq org-adapt-indentation t)
+;; (add-hook 'org-mode-hook 'org-indent-mode)
+(org-roam-db-autosync-mode)
 
 ;; indent styles
 (setq c-default-style
       '((c++-mode . "java") (c-mode . "java") (java-mode . "java") (other . "gnu")))
 
 
-(provide 'config)
+(setq gc-cons-threshold most-positive-fixnum)
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold 16777216)))
 
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((C . t)
+   ;;(cpp . t)
+   (latex . t)
+   (python . t)))
+
+
+(setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
+
+
+(provide 'config)
 
 ;;; config.el ends here
