@@ -38,14 +38,14 @@
 
   (leader-keys
     "w" '(:ignore t :wk "Window")
-    "w o" '(ace-window :wk "Ace window")
+    "w s" '(ace-swap-window :wk "Ace window")
     "w h" '(windmove-left :wk "Move to left window")
     "w j" '(windmove-down :wk "Move to down window")
     "w k" '(windmove-up :wk "Move to up window")
-    "w l" '(widmoce-right :wk "Move to right window"))
+    "w l" '(windmove-right :wk "Move to right window"))
 
   (leader-keys
-    "o" '(:ignore t :wk "org")
+    "o" '(:ignore t :wk "Org")
     "o r" '(:ignore t :wk "org-roam")
     "o r i" '(org-roam-node-insert :wk "Insert a node")
     "o r f" '(org-roam-node-find :wk "Find a node"))
@@ -58,20 +58,19 @@
 
 
 ;; Defer keybinding setup until Evil mode is loaded
-(with-eval-after-load 'evil
-;; ;;   ;; Remap hjkl to jkl;
-;;    (define-key evil-normal-state-map "h" nil)
-;;    (define-key evil-normal-state-map "j" 'evil-backward-char)
-;;    (define-key evil-normal-state-map "k" 'evil-next-line)
-;;    (define-key evil-normal-state-map "l" 'evil-previous-line)
-;;    (define-key evil-normal-state-map ";" 'evil-forward-char)
+;; (with-eval-after-load 'evil
+;;  ;;   ;; Remap hjkl to jkl;
+;;     (define-key evil-normal-state-map "h" nil)
+;;     (define-key evil-normal-state-map "j" 'evil-backward-char)
+;;     (define-key evil-normal-state-map "k" 'evil-next-line)
+;;     (define-key evil-normal-state-map "l" 'evil-previous-line)
+;;     (define-key evil-normal-state-map ";" 'evil-forward-char)
 
-;;    (define-key evil-visual-state-map "h" nil)
-;;    (define-key evil-visual-state-map "j" 'evil-backward-char)
-;;    (define-key evil-visual-state-map "k" 'evil-next-line)
-;;    (define-key evil-visual-state-map "l" 'evil-previous-line)
-;;    (define-key evil-visual-state-map ";" 'evil-forward-char)
-)
+;;     (define-key evil-visual-state-map "h" nil)
+;;     (define-key evil-visual-state-map "j" 'evil-backward-char)
+;;     (define-key evil-visual-state-map "k" 'evil-next-line)
+;;     (define-key evil-visual-state-map "l" 'evil-previous-line)
+;;     (define-key evil-visual-state-map ";" 'evil-forward-char))
 
 ;; Reload function
 (defun reload ()
@@ -86,16 +85,5 @@
  :keymaps 'vertico-map
  "C-j" 'vertico-next
  "C-k" 'vertico-previous)
-
-
-(general-define-key
- ;; Window movement
- "C-c l" 'windmove-right
- "C-c h" 'windmove-left
- "C-c k" 'windmove-up
- "C-c j" 'windmove-down
-
- ;; ace-window
- "M-o" 'ace-window)
 
 

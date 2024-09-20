@@ -16,7 +16,7 @@
 
 ;; Font
 (set-face-attribute 'default nil
-		    :font "JetBrains Mono"
+		    :font "JetBrains mono"
 		    :height 120
 		    :weight 'medium)
 
@@ -32,24 +32,15 @@
 ;; (setq org-startup-indented t)
 ;; (setq org-adapt-indentation t)
 ;; (add-hook 'org-mode-hook 'org-indent-mode)
-(org-roam-db-autosync-mode)
 
 ;; indent styles
 (setq c-default-style
       '((c++-mode . "java") (c-mode . "java") (java-mode . "java") (other . "gnu")))
 
 
-(setq gc-cons-threshold most-positive-fixnum)
-(add-hook 'emacs-startup-hook
-          (lambda () (setq gc-cons-threshold 16777216)))
-
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((C . t)
-   ;;(cpp . t)
-   (latex . t)
-   (python . t)))
+;; (setq gc-cons-threshold most-positive-fixnum)
+;; (add-hook 'emacs-startup-hook
+;;           (lambda () (setq gc-cons-threshold 16777216)))
 
 
 (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))

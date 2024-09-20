@@ -5,42 +5,42 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
                          ("gnu" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
+;;(package-initialize)
 
 
 ;; Ensure use-package is installed
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
 
 
 (require 'use-package)
-(setq use-package-always-ensure t)
+;;(setq use-package-always-ensure t)
 
 
 ;;evil mode(vim emulation)
 (use-package evil :ensure t :demand t
     :init     ;; tweak evil's configuration before loading
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-vsplit-window-right t)
-    (setq evil-split-window-below t)
+    (setq evil-want-integration t
+	  evil-want-keybinding nil
+	  evil-vsplit-window-right t
+	  evil-split-window-below t)
+    :config
     (evil-mode 1))
-    (use-package evil-collection :ensure t
+
+
+(use-package evil-collection :ensure t
     :after evil
     :config
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
-    (evil-collection-init)
-    )
-
-
-(use-package evil-tutor :ensure t)
+    (evil-collection-init))
 
 
 ;; Code Completion
 (use-package company
-  :after prog-mode
   :ensure t
+  :diminish
+  :hook (prog-mode . company-mode)
   :custom
   (company-backends '(company-capf))
   :config
@@ -53,88 +53,50 @@
 			   company-keywords
 			   company-files
 			   company-dabbrev
-			   company-yasnippet))
-  (add-to-list 'company-backends 'company-files)
-  (add-to-list 'company-backends 'company-yasnippet)
+			   company-yasnippet
+			   company-files))
   (add-hook 'org-mode-hook 'company-mode)
 
   :bind (:map company-active-map
               ("<tab>" . company-select-next)
 	      ("<backtab>" . company-select-previous)))
 
+
 (use-package company-box
   :ensure t
   :hook (company-mode . company-box-mode))
-
-(use-package company-irony
-  :ensure t
-  :after (company irony)
-  :config
-  (add-to-list 'company-backends 'company-irony))
-
-(use-package company-org-block
-  :ensure t
-  :after company
-  :config
-  (add-to-list 'company-backends 'company-org-block))
 
 
 ;; LSP
 (use-package lsp-mode
   :ensure t
-  :hook ((c++-mode . lsp-deferred)
-         (c-mode . lsp-deferred)
-         (java-mode . lsp-deferred)
-         (python-mode . lsp-deferred))
+  :hook ((c++-mode c-mode java-mode python-mode) . lsp-deferred)
   :commands (lsp lsp-deferred)
-  :config
-  (setq lsp-language-id-configuration
-        '((python-mode . "python")
-          (c-mode . "c")
-          (c++-mode . "cpp")
-          (java-mode . "java")))
   :custom
   (lsp-prefer-capf t)
-  (lsp-keep-workspace-alive nil))
+  (lsp-keep-workspace-alive nil)
+  (read-process-output-max (* 1024 1024))
+  (lsp-idle-delay 0.500)) ;; 1mb
 
 
 (use-package lsp-java
-  :hook (java-mode . lsp-deferred)
-  :config (add-hook 'java-mode-hook 'lsp))
+  :ensure t
+  :defer t)
 
 
 (use-package lsp-pyright
   :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred))))
+  :defer t
+  :hook (python-mode . lsp-deferred))
 
 
 (use-package python-black
  :ensure t
- :after python
- :hook (python-mode . python-black-on-save-mode-enable-dwim)
- :config
- (setq python-black-on-save-mode t))
+ :hook (python-mode . python-black-on-save-mode-enable-dwim))
 
 
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
 
-
-;; LSP Performance Tweaks
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-(setq lsp-idle-delay 0.500)
-
-
-;; LSP UI
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-position 'bottom
-	lsp-ui-doc-show-with-cursor t
-        lsp-ui-doc-max-width 100
-        lsp-ui-doc-max-height 30))
 
 
 ;; Which-key
@@ -148,23 +110,14 @@
 
 
 ;; Theme
-(use-package doom-themes :ensure t
+(use-package doom-themes
+  :ensure t
   :config
-  ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-acario-dark t)
-
-  ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;;(doom-themes-neotree-config)
-  ;; or for treemacs users
-  ;;(setq doom-themes-treemacs-theme "doom-colours") ; use "doom-colors" for less minimal icon theme
-  ;;(doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  ;;(doom-themes-org-config)
-  )
+  (doom-themes-org-config))
 
 
 ;; Vertico
@@ -202,13 +155,7 @@
   :ensure t
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-
-  ;; The :init section is always executed.
   :init
-
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
   (marginalia-mode))
 
 (use-package consult :ensure t)
@@ -227,7 +174,9 @@
 
 
 ;; Sudo-edit
-(use-package sudo-edit :ensure t)
+(use-package sudo-edit
+  :defer t
+  :ensure t)
 
 
 ;; Snippets
@@ -237,17 +186,17 @@
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :ensure t)
+  :ensure t
+  :after yasnippet)
 
 
 ;; Flycheck
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :hook (prog-mode . flycheck-mode))
 
 (use-package flycheck-inline
   :ensure t
-  :after flycheck
   :hook (flycheck-mode . flycheck-inline-mode))
 
 
@@ -255,17 +204,10 @@
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
-  :config
+  :custom
   (setq doom-modeline-major-mode-color-icon t
-	doom-modeline-buffer-state-icon t
-	doom-modeline-time t
-	doom-modeline-time-live-icon t
-	doom-modeline-battery t
-	))
-
-(display-battery-mode 1)
-(display-time-mode 1)
-
+	doom-modeline-buffer-state-icon t))
+  
 
 ;; All the icons
 (use-package all-the-icons :ensure t)
@@ -280,6 +222,7 @@
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 (use-package org-bullets
+  :defer t
   :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
@@ -315,8 +258,6 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
-(use-package ts
-  :ensure t)
 
 (use-package org-roam
   :ensure t
@@ -336,8 +277,6 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
-(use-package websocket
-    :after org-roam)
 
 (use-package org-roam-ui
     :after org-roam ;; or :after org
@@ -357,7 +296,8 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-startup-banner "~/.config/emacs/rayquaza.png"))
+  ;;(setq dashboard-startup-banner "~/.config/emacs/rayquaza.png")
+  )
 
 
 ;; Startup analyzer
@@ -368,6 +308,7 @@
 
 ;; Magit
 (use-package magit
+  :defer t
   :ensure t)
 
 (provide 'package)
