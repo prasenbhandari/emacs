@@ -15,7 +15,7 @@
 
 
 (require 'use-package)
-;;(setq use-package-always-ensure t)
+(setq use-package-always-ensure t)
 
 
 ;;evil mode(vim emulation)
@@ -115,7 +115,7 @@
   :config
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-acario-dark t)
+  (load-theme 'doom-moonlight t)
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
@@ -261,35 +261,40 @@
 
 (use-package org-roam
   :ensure t
-  :custom
-  (org-roam-directory (file-truename "~/org-roam/"))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+  :defer 10
   :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+  (require 'general)
+  (general-define-key
+   :states '(normal motion)
+   :keymaps 'override
+   :prefix "SPC"
+   "r f" 'org-roam-node-find
+   "r i" 'org-roam-node-insert)
+  (general-define-key
+   :states '(normal insert motion)
+   :kemaps 'override
+   :prefix "C-c"
+   "n i" 'org-roam-node-insert
+   "n f" 'org-roam-node-insert)
+  :custom
+  (org-roam-directory "~/Documents/Notes")
+  (org-roam-dailies-directory "journals/")
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?" :target
+      (file+head "pages/${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t))))
 
 
 (use-package org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+    :ensure t
+    :demand t
+    :after org-roam)
 
+
+(use-package f
+  :ensure t)
 
 ;; Dashboard
 (use-package dashboard
