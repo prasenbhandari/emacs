@@ -1,11 +1,8 @@
 ;;;init
 
-(setq org-roam-directory "~/Documents/Notes")
-
 (load "~/.config/emacs/package.el")
 (load "~/.config/emacs/config.el")
 (load "~/.config/emacs/keybindings.el")
-(load-file "~/.config/emacs/org-roam-logseq.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

@@ -278,13 +278,7 @@
    "n i" 'org-roam-node-insert
    "n f" 'org-roam-node-insert)
   :custom
-  (org-roam-directory "~/Documents/Notes")
-  (org-roam-dailies-directory "journals/")
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?" :target
-      (file+head "pages/${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t))))
+  (org-roam-directory "~/org-roam/"))
 
 
 (use-package org-roam-ui
