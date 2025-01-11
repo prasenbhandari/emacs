@@ -86,4 +86,9 @@
  "C-j" 'vertico-next
  "C-k" 'vertico-previous)
 
+(general-define-key
+ :keymaps 'window
+ "C-h" 'evil-window-left
+ "C-;" 'evil-window-right)
+
 

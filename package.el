@@ -221,13 +221,23 @@
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(use-package org-bullets
-  :defer t
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-(setq before-make-frame-hook
+;; (use-package org-modern
+;;   :ensure t
+;;   :after org)
+
+;; (add-hook 'org-mode-hook #'org-modern-mode)
+;; (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+
+
+(use-package org-bullets
+  :ensure t
+  :after org
+  :config
+  (setq org-hide-emphasis-markers t)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  (setq before-make-frame-hook
       (lambda () (let* ((variable-tuple
           (cond ((x-list-fonts "JetBrains Mono")         '(:font "JetBrains Mono"))
                 ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
@@ -248,7 +258,7 @@
      `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75 ,:foreground "#388a4e"))))
      `(org-document-title ((t (,@headline ,@variable-tuple :height 1.0 :underline nil))))))
 
-))
+)))
 
 (use-package evil-org
   :ensure t
@@ -259,9 +269,13 @@
   (evil-org-agenda-set-keys))
 
 
+(use-package org-fragtog
+  :ensure t
+  :hook (org-mode . org-fragtog-mode))
+
+
 (use-package org-roam
   :ensure t
-  :defer 10
   :config
   (org-roam-db-autosync-mode)
   (require 'general)
@@ -278,7 +292,7 @@
    "n i" 'org-roam-node-insert
    "n f" 'org-roam-node-insert)
   :custom
-  (org-roam-directory "~/org-roam/"))
+  (org-roam-directory "~/org-roam"))
 
 
 (use-package org-roam-ui

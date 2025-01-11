@@ -26,12 +26,12 @@
 
 (electric-pair-mode 1)
 (electric-indent-mode 1)
-
+(setq comp-deffered-compilation t)
 
 ;; ORG config
-;; (setq org-startup-indented t)
-;; (setq org-adapt-indentation t)
-;; (add-hook 'org-mode-hook 'org-indent-mode)
+(setq org-startup-indented t)
+(setq org-adapt-indentation t)
+(add-hook 'org-mode-hook 'org-indent-mode)
 
 ;; indent styles
 (setq c-default-style
